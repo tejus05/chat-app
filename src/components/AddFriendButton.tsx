@@ -27,7 +27,7 @@ const AddFriendButton = () => {
         return setError('email', { message: "Please enter a valid email. " });
       }
 
-      await axios.post('/api/friends/add', {
+      const response = await axios.post('/api/friends/add', {
         email: validatedEmail.data
       });
 
