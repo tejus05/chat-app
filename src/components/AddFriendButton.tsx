@@ -23,8 +23,6 @@ const AddFriendButton = () => {
     try {
       const validatedEmail = addFriendValidator.safeParse(email);
 
-      console.log(validatedEmail)
-
       if (!validatedEmail.success) {
         return setError('email', { message: "Please enter a valid email. " });
       }
@@ -36,12 +34,12 @@ const AddFriendButton = () => {
       setShowSuccessState(true);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        setError('email',{message: error.message})
+        return setError("email", { message: error.message });
       }
       if (error instanceof AxiosError) {
-        setError("email", { message: error.response?.data });
+        return setError("email", { message: error.response?.data });
       }
-      setError('email',{message: "Something went wrong"})
+      setError("email", { message: "Something went wrong" });
       setShowSuccessState(false);
     }
   }
