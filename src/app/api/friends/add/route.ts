@@ -2,6 +2,7 @@ import { addFriendValidator } from "@/lib/validations/addFriend";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import authOptions from "../../auth/authOptions";
+import { fetchRedis } from "@/components/helpers/redis";
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,16 +12,10 @@ export async function POST(request: NextRequest) {
 
     const validatedEmail = validation.data.email;
 
-    const RESTResponse = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/get/user:email${validatedEmail}`, {
-      headers: {
-        Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}`
-      },
-      cache: "no-store"
-    });
-
-    const data = await RESTResponse.json() as {result: string};
-
-    const idToAdd = data.result;
+    const idToAdd = (await fetchRedis(
+      'get',
+      `user:email:${validatedEmail}`
+    )) as string
 
     if (!idToAdd) return new NextResponse("This person does not exist. ", { status: 400 });
 
@@ -30,7 +25,8 @@ export async function POST(request: NextRequest) {
 
     if (idToAdd === session.user.id) return new NextResponse("You cannot add yourself as a friend. ", { status: 400 });
 
-    return NextResponse.json(data)
+    
+
   } catch (error) {
     
   }
