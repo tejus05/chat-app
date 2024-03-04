@@ -30,12 +30,12 @@ export async function POST(request: NextRequest) {
     // check if user is already added
     const isAlreadyAdded = (await fetchRedis("sismember", `user:${idToAdd}:incoming_friend_requests`, session.user.id)) as 0 | 1;
 
-    if (!isAlreadyAdded) return new NextResponse("Already added this user. ", { status: 400 });
+    if (isAlreadyAdded) return new NextResponse("Already added this user. ", { status: 400 });
 
     // check if user is already a friend
     const isAlreadyFriend = (await fetchRedis("sismember", `user:${session.user.id}:friends`, idToAdd)) as 0 | 1;
 
-    if (!isAlreadyFriend) return new NextResponse("Already friends with this user. ", { status: 400 });
+    if (isAlreadyFriend) return new NextResponse("Already friends with this user. ", { status: 400 });
 
     // valid - send friend request
 
