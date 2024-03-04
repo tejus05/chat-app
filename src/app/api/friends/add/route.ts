@@ -44,8 +44,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(data);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return new NextResponse("Invalid request payload. ",{status: 422});
+      return new NextResponse("Invalid request payload. ", { status: 422 }); //unprocessable entity
     }
-    return new NextResponse("Invalid request. ",{status: 400});
+    return new NextResponse(`[ADD_FRIENDS]: ${error}`, { status: 500 })
   }
 }
