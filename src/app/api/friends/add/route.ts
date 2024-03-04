@@ -1,10 +1,10 @@
+import { fetchRedis } from "@/components/helpers/redis";
+import db from '@/db';
 import { addFriendValidator } from "@/lib/validations/addFriend";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import authOptions from "../../auth/authOptions";
-import { fetchRedis } from "@/components/helpers/redis";
-import db from '@/db'
 import { z } from "zod";
+import authOptions from "../../auth/authOptions";
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,18 +28,18 @@ export async function POST(request: NextRequest) {
     if (idToAdd === session.user.id) return new NextResponse("You cannot add yourself as a friend. ", { status: 400 });
 
     // check if user is already added
-    const isAlreadyAdded = (await fetchRedis("sismember",`user:${idToAdd}:incoming_friend_requests`, session.user.id)) as 0 | 1
+    const isAlreadyAdded = (await fetchRedis("sismember", `user:${idToAdd}:incoming_friend_requests`, session.user.id)) as 0 | 1;
 
     if (!isAlreadyAdded) return new NextResponse("Already added this user. ", { status: 400 });
 
     // check if user is already a friend
-    const isAlreadyFriend = (await fetchRedis("sismember",`user:${session.user.id}:friends`, idToAdd)) as 0 | 1
+    const isAlreadyFriend = (await fetchRedis("sismember", `user:${session.user.id}:friends`, idToAdd)) as 0 | 1;
 
     if (!isAlreadyFriend) return new NextResponse("Already friends with this user. ", { status: 400 });
 
     // valid - send friend request
 
-      const data = await db.sadd(`user:${idToAdd}:incoming_friend_requests`, session.user.id)
+    const data = await db.sadd(`user:${idToAdd}:incoming_friend_requests`, session.user.id);
 
     return NextResponse.json(data);
   } catch (error) {
