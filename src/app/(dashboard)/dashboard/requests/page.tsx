@@ -4,7 +4,7 @@ import authOptions from "@/app/api/auth/authOptions";
 import { getServerSession } from "next-auth";
 import { notFound } from "next/navigation";
 
-const page = async () => {
+const FriendRequestsPage = async () => {
   const session = await getServerSession(authOptions);
   if (!session) notFound();
 
@@ -39,4 +39,4 @@ const page = async () => {
   );
 };
 
-export default page;
+export default FriendRequestsPage;
