@@ -5,6 +5,8 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import authOptions from "../../auth/authOptions";
+import { pusherServer } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,6 +40,15 @@ export async function POST(request: NextRequest) {
     if (isAlreadyFriend) return new NextResponse("Already friends with this user. ", { status: 400 });
 
     // valid - send friend request
+
+    pusherServer.trigger(
+      (toPusherKey(`user:${idToAdd}:incoming_friend_requests`)), //channel (subscribe)
+      `incoming_friend_requests`, //event (bind)
+      {
+        senderId: session.user.id,
+        senderEmail: session.user.email
+      }
+    )
 
     const data = await db.sadd(`user:${idToAdd}:incoming_friend_requests`, session.user.id);
 

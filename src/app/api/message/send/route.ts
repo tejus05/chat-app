@@ -5,6 +5,8 @@ import { nanoid } from 'nanoid';
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import authOptions from "../../auth/authOptions";
+import { pusherServer } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,6 +41,14 @@ export async function POST(request: NextRequest) {
     if (!messageValidation.success) return new NextResponse("Invalid message format. ", { status: 400 });
 
     const message = messageValidation.data;
+
+    pusherServer.trigger(
+      (
+        toPusherKey(`chat:${chatId}`)
+      ),
+      'incoming_message',
+      message
+    )
 
     const data = await db.zadd(`chat:${chatId}:messages`, {
       score: timestamp,
