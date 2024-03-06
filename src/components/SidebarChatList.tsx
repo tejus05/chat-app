@@ -1,12 +1,20 @@
 "use client";
 
-import { chatHrefConstructor } from "@/lib/utils";
+import { pusherClient } from "@/lib/pusher";
+import { chatHrefConstructor, toPusherKey } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import UnseenChatToast from "./UnseenChatToast";
 
 interface SidebarChatListProps{
   friends: User[],
   sessionId: string
+}
+
+interface ExtendedMessage extends Message {
+  senderImage: string,
+  senderName: string
 }
 
 const SidebarChatList = ({friends, sessionId}:SidebarChatListProps) => {
@@ -16,12 +24,65 @@ const SidebarChatList = ({friends, sessionId}:SidebarChatListProps) => {
   const pathname = usePathname();
 
   useEffect(() => {
+    pusherClient.subscribe(
+      (
+        toPusherKey(`user:${sessionId}:chats`)
+      )
+    )
+
+    pusherClient.subscribe(
+      (
+        toPusherKey(`user:${sessionId}:friends`)
+      )
+    )
+
+    const chatHandler = (message: ExtendedMessage) => {
+      const shouldNotify = pathname === `/dashboard/chat/${chatHrefConstructor(sessionId, message.senderId)}`;
+
+      if (!shouldNotify) return;
+
+       toast.custom((t) => (
+        <UnseenChatToast
+          t={t}
+          sessionId={sessionId}
+          senderId={message.senderId}
+          senderImg={message.senderImage}
+          senderMessage={message.text}
+          senderName={message.senderName}
+         />
+       ))
+    }
+
+    const friendHandler = () => {
+      router.refresh();
+    }
+
+    pusherClient.bind("new_message", chatHandler);
+    pusherClient.bind("new_friend", friendHandler);
+    
+    return () => {
+      pusherClient.unsubscribe(
+        (
+          toPusherKey(`user:${sessionId}:chats`)
+        )
+      )
+  
+      pusherClient.unsubscribe(
+        (
+          toPusherKey(`user:${sessionId}:friends`)
+        )
+      )
+    }
+  }, [pathname, sessionId, router]);
+
+  useEffect(() => {
     if (pathname.includes('chat')) {
       setUnseenMessages(prev => (
         prev.filter((message) => !pathname.includes(message.senderId))
       ));
     }
   }, [pathname]);
+
 
   return (
     <ul role="list" className="max-h-[25rem] overflow-y-auto -mx-2 space-y-1">
