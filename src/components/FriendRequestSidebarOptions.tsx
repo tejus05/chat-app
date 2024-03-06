@@ -53,7 +53,7 @@ const FriendRequestSidebarOptions = ({
       pusherClient.unbind("new_friend", addedFriendHandler);
       pusherClient.unbind("incoming_friend_requests", friendRequestHandler);
     };
-  }, [sessionId]);
+  }, [sessionId, router]);
 
   return (
     <Link

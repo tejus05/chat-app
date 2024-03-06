@@ -37,7 +37,7 @@ const SidebarChatList = ({friends, sessionId}:SidebarChatListProps) => {
     )
 
     const chatHandler = (message: ExtendedMessage) => {
-      const shouldNotify = pathname === `/dashboard/chat/${chatHrefConstructor(sessionId, message.senderId)}`;
+      const shouldNotify = pathname !== `/dashboard/chat/${chatHrefConstructor(sessionId, message.senderId)}`;
 
       if (!shouldNotify) return;
 
