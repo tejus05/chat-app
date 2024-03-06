@@ -68,23 +68,21 @@ const ChatIdPage = async ({params: {chatId}}:ChatIdPageProps) => {
               </span>
             </div>
 
-            <span className="text-sm text-gray-600">
-              {chatPartner.email}
-            </span>
+            <span className="text-sm text-gray-600">{chatPartner.email}</span>
           </div>
         </div>
       </div>
 
       <Messages
+        chatId={chatId}
+        chatPartner={chatPartner}
+        sessionImage={session.user.image!}
         sessionId={session.user.id}
         initialMessages={initialMessages}
       />
-      <ChatInput
-        chatId={chatId}
-        chatPartner={chatPartner}
-      />
+      <ChatInput chatId={chatId} chatPartner={chatPartner} />
     </div>
-  )
+  );
 }
 
 export default ChatIdPage
