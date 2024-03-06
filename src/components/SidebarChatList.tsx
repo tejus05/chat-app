@@ -53,7 +53,9 @@ const SidebarChatList = ({friends, sessionId}:SidebarChatListProps) => {
        ))
     }
 
-    const friendHandler = () => {
+    const friendHandler = (friend: User) => {
+      router.push(`chat/${chatHrefConstructor(sessionId, friend.id)}`);
+
       router.refresh();
     }
 

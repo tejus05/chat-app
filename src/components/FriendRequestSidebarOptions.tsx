@@ -1,9 +1,10 @@
 "use client";
 
 import { pusherClient } from "@/lib/pusher";
-import { toPusherKey } from "@/lib/utils";
+import { chatHrefConstructor, toPusherKey } from "@/lib/utils";
 import { User } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface FriendRequestSidebarOptionsProps {
@@ -19,6 +20,8 @@ const FriendRequestSidebarOptions = ({
     initialUnseenRequestCount
   );
 
+  const router = useRouter();
+
   useEffect(() => {
     pusherClient.subscribe(
       toPusherKey(`user:${sessionId}:incoming_friend_requests`)
@@ -29,8 +32,13 @@ const FriendRequestSidebarOptions = ({
       setUnseenRequestCount((prev) => prev + 1);
     };
 
-    const addedFriendHandler = () => {
+    const addedFriendHandler = (friend: User) => {
       setUnseenRequestCount((prev) => prev - 1);
+      router.push(
+        `chat/${chatHrefConstructor(sessionId, friend.id)}`
+      );
+
+      router.refresh();
     };
 
     pusherClient.bind("incoming_friend_requests", friendRequestHandler);

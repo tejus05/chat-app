@@ -5,7 +5,7 @@ import { fetchRedis } from "@/components/helpers/redis";
 import { messageSchemaArray } from "@/lib/validations/messageValidation";
 import { getServerSession } from "next-auth";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 interface ChatIdPageProps{
   params: {
@@ -38,10 +38,15 @@ const ChatIdPage = async ({params: {chatId}}:ChatIdPageProps) => {
 
   if (user.id !== userId1 && user.id !== userId2) return notFound();
 
+  
   const chatPartnerId = user.id === userId1 ? userId2 : userId1;
   const chatPartnerRaw = (await fetchRedis("get", `user:${chatPartnerId}`)) as string;
-
+  
   const chatPartner = JSON.parse(chatPartnerRaw) as User;
+  
+  const isFriend = await fetchRedis("sismember", `user:${session.user.id}:friends`, chatPartnerId);
+
+  if (!isFriend) return redirect("/dashboard");
 
   const initialMessages = await getChatMessages(chatId);
 
