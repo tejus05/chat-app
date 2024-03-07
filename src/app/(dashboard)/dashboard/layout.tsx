@@ -1,16 +1,17 @@
-import authOptions from "@/app/api/auth/authOptions";
-import FriendRequestSidebarOptions from "@/components/FriendRequestSidebarOptions";
-import { Icon, Icons } from "@/components/Icons";
-import MobileChatLayoutTrigger from "@/components/MobileChatLayoutTrigger";
-import SidebarChatList from "@/components/SidebarChatList";
-import SignOutButton from "@/components/SignOutButton";
-import { getFriendsByUserId } from "@/components/helpers/getFriendsByUserId";
-import { fetchRedis } from "@/components/helpers/redis";
-import { getServerSession } from "next-auth";
-import Image from "next/image";
+import authOptions from "@/app/api/auth/authOptions"
+import { Icons } from "@/components/Icons";
+import { getServerSession } from "next-auth"
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren } from "react"
+import { Icon } from "@/components/Icons";
+import Image from "next/image";
+import SignOutButton from "@/components/SignOutButton";
+import FriendRequestSidebarOptions from "@/components/FriendRequestSidebarOptions";
+import { fetchRedis } from "@/components/helpers/redis";
+import { getFriendsByUserId } from "@/components/helpers/getFriendsByUserId";
+import SidebarChatList from "@/components/SidebarChatList";
+import MobileChatLayout from "@/components/MobileChatLayout";
 
 export const metadata = {
   title: "Chat App | Dashboard",
@@ -47,7 +48,7 @@ const DashboardLayout = async ({children}:PropsWithChildren) => {
   return (
     <div className="w-full flex h-screen">
       <div className="md:hidden">
-        <MobileChatLayoutTrigger
+        <MobileChatLayout
           friends={friends}
           session={session}
           sidebarOptions={sidebarOptions}
