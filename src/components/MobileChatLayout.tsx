@@ -1,24 +1,33 @@
 "use client";
 
 import { Button, buttonVariants } from "@/components/ui/button";
+import { pusherClient } from "@/lib/pusher";
 import { SidebarOption } from "@/lib/types/typings";
+import { chatHrefConstructor, toPusherKey } from "@/lib/utils";
 import { Dialog, Transition } from "@headlessui/react";
 import { Menu, X } from "lucide-react";
 import { Session } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import FriendRequestSidebarOptions from "./FriendRequestSidebarOptions";
 import { Icons } from "./Icons";
 import SidebarChatList from "./SidebarChatList";
 import SignOutButton from "./SignOutButton";
+import toast from "react-hot-toast";
+import UnseenChatToast from "./UnseenChatToast";
 
 interface MobileChatLayoutProps {
   friends: User[];
   session: Session;
   sidebarOptions: SidebarOption[];
   unseenRequestCount: number;
+}
+
+interface ExtendedMessage extends Message {
+  senderImage: string;
+  senderName: string;
 }
 
 const MobileChatLayout = ({
@@ -29,7 +38,121 @@ const MobileChatLayout = ({
 }: MobileChatLayoutProps) => {
   const [open, setOpen] = useState<boolean>(false);
 
+  const [unseenRequestCountState, setUnseenRequestCountState] = useState<number>(unseenRequestCount);
+
   const pathname = usePathname();
+  const router = useRouter();
+
+  
+
+  useEffect(() => {
+    pusherClient.subscribe(
+      toPusherKey(`user:${session.user.id}:incoming_friend_requests`)
+    );
+    pusherClient.subscribe(toPusherKey(`user:${session.user.id}:friends`));
+    pusherClient.subscribe(toPusherKey(`user:${session.user.id}:deny`));
+
+    const friendRequestHandler = () => {
+      console.log("friendRequestHandler")
+      setUnseenRequestCountState((prev) => prev + 1);
+      router.refresh();
+    };
+
+    const addedFriendHandler = (friend: User) => {
+      console.log("addedFriendHandler")
+      setUnseenRequestCountState((prev) => prev - 1);
+      router.push(`chat/${chatHrefConstructor(session.user.id, friend.id)}`);
+
+      router.refresh();
+    };
+
+    const denyFriendHandler = ({
+      senderId,
+      senderEmail,
+    }: {
+      senderId: string;
+      senderEmail: string;
+    }) => {
+      console.log("denyFriendHandler")
+      setUnseenRequestCountState((prev) => prev - 1);
+      router.refresh();
+    };
+
+    pusherClient.bind("incoming_friend_requests", friendRequestHandler);
+    pusherClient.bind("new_friend", addedFriendHandler);
+    pusherClient.bind("deny_friend", denyFriendHandler);
+
+    return () => {
+      pusherClient.unsubscribe(
+        toPusherKey(`user:${session.user.id}:incoming_friend_requests`)
+      );
+      pusherClient.unsubscribe(toPusherKey(`user:${session.user.id}:friends`));
+
+      pusherClient.unbind("new_friend", addedFriendHandler);
+      pusherClient.unbind("incoming_friend_requests", friendRequestHandler);
+      pusherClient.unbind("deny_friend", denyFriendHandler);
+
+    };
+  }, [session.user.id, router, setUnseenRequestCountState, pathname]);
+
+
+  
+
+  useEffect(() => {
+    pusherClient.subscribe(toPusherKey(`user:${session.user.id}:chats`));
+
+    pusherClient.subscribe(toPusherKey(`user:${session.user.id}:friends`));
+
+    pusherClient.subscribe(toPusherKey(`user:${session.user.id}:remove_friend`));
+
+    const chatHandler = (message: ExtendedMessage) => {
+      const shouldNotify =
+        pathname !==
+        `/dashboard/chat/${chatHrefConstructor(session.user.id, message.senderId)}`;
+
+      if (!shouldNotify) return;
+
+      toast.custom((t) => (
+        <UnseenChatToast
+          t={t}
+          sessionId={session.user.id}
+          senderId={message.senderId}
+          senderImg={message.senderImage}
+          senderMessage={message.text}
+          senderName={message.senderName}
+        />
+      ));
+    };
+
+    const friendHandler = (friend: User) => {
+      toast.success(`Congratulation! You and ${friend.name} are now friends`);
+
+      router.refresh();
+    };
+
+    const removeFriendHandler = (friend: User) => {
+      setOpen(false);
+      router.refresh();
+    };
+
+    pusherClient.bind("new_message", chatHandler);
+    pusherClient.bind("new_friend", friendHandler);
+    pusherClient.bind("remove_friend", removeFriendHandler);
+
+    return () => {
+      pusherClient.unsubscribe(toPusherKey(`user:${session.user.id}:chats`));
+
+      pusherClient.unsubscribe(toPusherKey(`user:${session.user.id}:friends`));
+
+      pusherClient.unsubscribe(toPusherKey(`user:${session.user.id}:remove_friend`));
+
+      pusherClient.unbind("new_message", chatHandler);
+
+      pusherClient.unbind("new_friend", friendHandler);
+
+      pusherClient.unbind("remove_friend", removeFriendHandler);
+    };
+  }, [pathname, session.user.id, router, unseenRequestCountState]);
 
   useEffect(() => {
     setOpen(false);
@@ -131,7 +254,7 @@ const MobileChatLayout = ({
                                 <li>
                                   <FriendRequestSidebarOptions
                                     initialUnseenRequestCount={
-                                      unseenRequestCount
+                                      unseenRequestCountState
                                     }
                                     sessionId={session.user.id}
                                   />

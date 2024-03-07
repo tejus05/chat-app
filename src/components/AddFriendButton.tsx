@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 const AddFriendButton = () => {
   const [showSuccessState, setShowSuccessState] = useState(false);
 
+
   type TAddFriendValidator = z.infer<typeof addFriendValidator>;
 
   const { register, handleSubmit, setError, formState:{errors} } = useForm<TAddFriendValidator>({
