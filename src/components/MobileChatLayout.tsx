@@ -165,7 +165,7 @@ const MobileChatLayout = ({
                                 </div>
                               </div>
 
-                              <SignOutButton className="h-full aspect-square" />
+                              <SignOutButton />
                             </li>
                           </ul>
                         </nav>

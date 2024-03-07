@@ -20,6 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog";
+import axios from "axios";
 
 interface SidebarChatListProps {
   friends: User[];
@@ -34,6 +35,7 @@ interface ExtendedMessage extends Message {
 const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
   const [isMounted, setIsMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isRemovingFriend, setIsRemovingFriend] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -42,6 +44,8 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:chats`));
 
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`));
+
+    pusherClient.subscribe(toPusherKey(`user:${sessionId}:remove_friend`));
 
     const chatHandler = (message: ExtendedMessage) => {
       const shouldNotify =
@@ -63,20 +67,33 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
     };
 
     const friendHandler = (friend: User) => {
-      router.push(`chat/${chatHrefConstructor(sessionId, friend.id)}`);
+      toast(`Congratulation! You and ${friend.name} are now friends`);
 
+      router.refresh();
+    };
+
+    const removeFriendHandler = (friend: User) => {
       router.refresh();
     };
 
     pusherClient.bind("new_message", chatHandler);
     pusherClient.bind("new_friend", friendHandler);
-
+    pusherClient.bind("remove_friend", removeFriendHandler);
+    
     return () => {
       pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:chats`));
 
       pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:friends`));
+      
+      pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:remove_friend`));
+      
+      pusherClient.unbind("new_message", chatHandler);
+      
+      pusherClient.unbind("new_friend", friendHandler);
+
+      pusherClient.unbind("remove_friend", removeFriendHandler);
     };
-  }, [pathname, sessionId, router]);
+    }, [pathname, sessionId, router]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -84,6 +101,21 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
 
   if (!isMounted) {
     return null;
+  }
+
+  const removeFriend = async (friend: User) => {
+    try {
+      setIsRemovingFriend(true);
+      await axios.post("/api/friends/delete", {
+        id: friend.id
+      });
+      router.refresh();
+    } catch (error) {
+      toast.error("Could not remove friend. Please try again. ");
+      console.log(error)
+    } finally {
+      setIsRemovingFriend(true);
+    }
   }
 
   return (
@@ -129,7 +161,9 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction>Continue</AlertDialogAction>
+                    <AlertDialogAction onClick={() => {
+                      removeFriend(friend);
+                    }}>Continue</AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
