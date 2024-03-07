@@ -26,7 +26,9 @@ export async function POST(request: NextRequest) {
     pusherServer.trigger(
       (toPusherKey(`user:${session.user.id}:deny`)), //channel (subscribe)
       `deny_friend`, //event (bind)
-      ""
+      {
+        success: true
+      }
     )
 
     await db.srem(`user:${session.user.id}:incoming_friend_requests`, idToRemove);

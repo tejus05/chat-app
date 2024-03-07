@@ -13,6 +13,11 @@ import { getFriendsByUserId } from "@/components/helpers/getFriendsByUserId";
 import SidebarChatList from "@/components/SidebarChatList";
 import MobileChatLayout from "@/components/MobileChatLayout";
 
+export const metadata = {
+  title: "Chat App | Dashboard",
+  description: "Your dashboard",
+};
+
 interface SidebarOption {
   id: number,
   name: string,

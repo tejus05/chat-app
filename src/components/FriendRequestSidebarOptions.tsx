@@ -9,14 +9,12 @@ import { useEffect, useState } from "react";
 
 interface FriendRequestSidebarOptionsProps {
   sessionId: string;
-  initialUnseenRequestCount: number;
-  mobile?: boolean
+  initialUnseenRequestCount: number
 }
 
 const FriendRequestSidebarOptions = ({
   sessionId,
-  initialUnseenRequestCount,
-  mobile
+  initialUnseenRequestCount
 }:FriendRequestSidebarOptionsProps) => {
   const [unseenRequestCount, setUnseenRequestCount] = useState<number>(
     initialUnseenRequestCount
@@ -33,6 +31,7 @@ const FriendRequestSidebarOptions = ({
 
     const friendRequestHandler = () => {
       setUnseenRequestCount((prev) => prev + 1);
+      router.refresh();
     };
     
     const addedFriendHandler = (friend: User) => {
@@ -63,7 +62,7 @@ const FriendRequestSidebarOptions = ({
       pusherClient.unbind("new_friend", addedFriendHandler);
       pusherClient.unbind("incoming_friend_requests", friendRequestHandler);
     };
-  }, [sessionId, router, mobile]);
+  }, [sessionId, router]);
 
   return (
     <Link

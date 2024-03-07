@@ -66,7 +66,7 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
     };
 
     const friendHandler = (friend: User) => {
-      toast(`Congratulation! You and ${friend.name} are now friends`);
+      toast.success(`Congratulation! You and ${friend.name} are now friends`);
 
       router.refresh();
     };
@@ -113,7 +113,7 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
       toast.error("Could not remove friend. Please try again. ");
       console.log(error)
     } finally {
-      setIsRemovingFriend(true);
+      setIsRemovingFriend(false);
     }
   }
 
