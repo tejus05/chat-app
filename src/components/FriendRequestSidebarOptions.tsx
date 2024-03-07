@@ -9,13 +9,13 @@ import { useEffect, useState } from "react";
 
 interface FriendRequestSidebarOptionsProps {
   sessionId: string;
-  initialUnseenRequestCount: number
+  initialUnseenRequestCount: number;
 }
 
 const FriendRequestSidebarOptions = ({
   sessionId,
-  initialUnseenRequestCount
-}:FriendRequestSidebarOptionsProps) => {
+  initialUnseenRequestCount,
+}: FriendRequestSidebarOptionsProps) => {
   const [unseenRequestCount, setUnseenRequestCount] = useState<number>(
     initialUnseenRequestCount
   );
@@ -33,12 +33,10 @@ const FriendRequestSidebarOptions = ({
       setUnseenRequestCount((prev) => prev + 1);
       router.refresh();
     };
-    
+
     const addedFriendHandler = (friend: User) => {
       setUnseenRequestCount((prev) => prev - 1);
-      router.push(
-        `chat/${chatHrefConstructor(sessionId, friend.id)}`
-      );
+      router.push(`chat/${chatHrefConstructor(sessionId, friend.id)}`);
 
       router.refresh();
     };

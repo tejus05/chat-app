@@ -15,10 +15,10 @@ import SidebarChatList from "./SidebarChatList";
 import SignOutButton from "./SignOutButton";
 
 interface MobileChatLayoutProps {
-  friends: User[],
-  session: Session,
-  sidebarOptions: SidebarOption[],
-  unseenRequestCount: number
+  friends: User[];
+  session: Session;
+  sidebarOptions: SidebarOption[];
+  unseenRequestCount: number;
 }
 
 const MobileChatLayout = ({

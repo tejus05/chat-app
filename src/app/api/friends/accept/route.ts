@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
       db.sadd(`user:${session.user.id}:friends`, idToAdd),
       db.sadd(`user:${idToAdd}:friends`, session.user.id),
       db.srem(`user:${session.user.id}:incoming_friend_requests`, idToAdd),
+      console.log("triggered")
     ])
 
     return NextResponse.json({
