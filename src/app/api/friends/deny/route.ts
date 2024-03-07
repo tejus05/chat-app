@@ -5,6 +5,8 @@ import { NextRequest, NextResponse } from "next/server";
 import db from '@/db'
 import { z } from "zod";
 import authOptions from "../../auth/authOptions";
+import { pusherServer } from "@/lib/pusher";
+import { toPusherKey } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,6 +22,12 @@ export async function POST(request: NextRequest) {
 
     const hasFriendRequest = await fetchRedis("sismember", `user:${session.user.id}:incoming_friend_requests`, idToRemove);
     if (!hasFriendRequest) return new NextResponse("No friend request exists. ", { status: 400 });
+
+    pusherServer.trigger(
+      (toPusherKey(`user:${session.user.id}:deny`)), //channel (subscribe)
+      `deny_friend`, //event (bind)
+      ""
+    )
 
     await db.srem(`user:${session.user.id}:incoming_friend_requests`, idToRemove);
 

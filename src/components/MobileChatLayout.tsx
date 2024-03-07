@@ -134,6 +134,7 @@ const MobileChatLayout = ({
                                       unseenRequestCount
                                     }
                                     sessionId={session.user.id}
+                                    mobile={true}
                                   />
                                 </li>
                               </ul>

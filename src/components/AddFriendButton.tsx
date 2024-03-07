@@ -32,14 +32,28 @@ const AddFriendButton = () => {
       });
 
       setShowSuccessState(true);
+      setTimeout(() => {
+        setShowSuccessState(false)
+      }, 3000);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return setError("email", { message: error.message });
+        setError("email", { message: error.message });
+        setTimeout(() => {
+          setError("email", {message:undefined});
+        }, 3000);
+        return
       }
       if (error instanceof AxiosError) {
-        return setError("email", { message: error.response?.data });
+        setError("email", { message: error.response?.data });
+        setTimeout(() => {
+          setError("email", {message:undefined});
+        }, 3000);
+        return
       }
       setError("email", { message: "Something went wrong" });
+      setTimeout(() => {
+        setError("email", {message:undefined});
+      }, 3000);
       setShowSuccessState(false);
     }
   }
@@ -65,7 +79,9 @@ const AddFriendButton = () => {
         />
         <Button type="submit">Add</Button>
       </div>
-      <p className="mt-1 text-sm text-red-600">{errors.email?.message}</p>
+      <p className="mt-1 text-sm text-red-600">
+        {errors.email?.message}
+      </p>
       {showSuccessState ? (
         <p className="mt-1 text-sm text-green-600">Friend request sent!</p>
       ) : null}

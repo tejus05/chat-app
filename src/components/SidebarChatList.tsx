@@ -2,7 +2,7 @@
 
 import { pusherClient } from "@/lib/pusher";
 import { chatHrefConstructor, toPusherKey } from "@/lib/utils";
-import { Trash } from "lucide-react";
+import { Loader2, Trash } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { MouseEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -136,17 +136,21 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
                 onOpenChange={() => setIsOpen((prev) => !prev)}
               >
                 <AlertDialogTrigger asChild>
-                    <Button
-                      variant="link"
-                      onClick={(e: MouseEvent) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        setIsOpen(true);
-                      }}
-                      className="hover:text-rose-600"
-                    >
+                  <Button
+                    variant="link"
+                    onClick={(e: MouseEvent) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setIsOpen(true);
+                    }}
+                    className="hover:text-rose-600"
+                  >
+                    {isRemovingFriend ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
                       <Trash className="h-4 w-4" />
-                    </Button>
+                    )}
+                  </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
@@ -158,9 +162,13 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => {
-                      removeFriend(friend);
-                    }}>Continue</AlertDialogAction>
+                    <AlertDialogAction
+                      onClick={() => {
+                        removeFriend(friend);
+                      }}
+                    >
+                      Continue
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>

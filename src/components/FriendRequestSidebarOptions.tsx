@@ -10,11 +10,13 @@ import { useEffect, useState } from "react";
 interface FriendRequestSidebarOptionsProps {
   sessionId: string;
   initialUnseenRequestCount: number;
+  mobile?: boolean
 }
 
 const FriendRequestSidebarOptions = ({
   sessionId,
   initialUnseenRequestCount,
+  mobile
 }:FriendRequestSidebarOptionsProps) => {
   const [unseenRequestCount, setUnseenRequestCount] = useState<number>(
     initialUnseenRequestCount
@@ -27,11 +29,12 @@ const FriendRequestSidebarOptions = ({
       toPusherKey(`user:${sessionId}:incoming_friend_requests`)
     );
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:friends`));
+    pusherClient.subscribe(toPusherKey(`user:${sessionId}:deny`));
 
     const friendRequestHandler = () => {
       setUnseenRequestCount((prev) => prev + 1);
     };
-
+    
     const addedFriendHandler = (friend: User) => {
       setUnseenRequestCount((prev) => prev - 1);
       router.push(
@@ -41,8 +44,15 @@ const FriendRequestSidebarOptions = ({
       router.refresh();
     };
 
+    const denyFriendHandler = () => {
+      setUnseenRequestCount((prev) => prev - 1);
+
+      router.refresh();
+    };
+
     pusherClient.bind("incoming_friend_requests", friendRequestHandler);
     pusherClient.bind("new_friend", addedFriendHandler);
+    pusherClient.bind("deny_friend", denyFriendHandler);
 
     return () => {
       pusherClient.unsubscribe(
@@ -53,7 +63,7 @@ const FriendRequestSidebarOptions = ({
       pusherClient.unbind("new_friend", addedFriendHandler);
       pusherClient.unbind("incoming_friend_requests", friendRequestHandler);
     };
-  }, [sessionId, router]);
+  }, [sessionId, router, mobile]);
 
   return (
     <Link
