@@ -5,7 +5,6 @@ import { signOut } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "./ui/button";
-import ActionTooltip from "./ActionTooltip";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -33,7 +32,6 @@ const SignOutButton = () => {
 
   return (
     <AlertDialog>
-      <ActionTooltip label="Logout" align="start" side="top">
         <AlertDialogTrigger asChild>
           <Button className="h-full aspect-square" variant="ghost">
             {isSigningOut ? (
@@ -43,7 +41,6 @@ const SignOutButton = () => {
             )}
           </Button>
         </AlertDialogTrigger>
-      </ActionTooltip>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Logout</AlertDialogTitle>

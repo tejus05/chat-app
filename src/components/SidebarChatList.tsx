@@ -8,7 +8,6 @@ import { MouseEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import UnseenChatToast from "./UnseenChatToast";
 import { Button } from "./ui/button";
-import ActionTooltip from "./ActionTooltip";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -137,7 +136,6 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
                 onOpenChange={() => setIsOpen((prev) => !prev)}
               >
                 <AlertDialogTrigger asChild>
-                  <ActionTooltip label="Remove friend">
                     <Button
                       variant="link"
                       onClick={(e: MouseEvent) => {
@@ -149,7 +147,6 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
                     >
                       <Trash className="h-4 w-4" />
                     </Button>
-                  </ActionTooltip>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
