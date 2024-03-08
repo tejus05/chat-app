@@ -24,12 +24,12 @@ export async function POST(request: NextRequest) {
   
     if (!isFriend) return new NextResponse("You are not friends with that user. ", { status: 401 });
 
-    await pusherServer.trigger(
+    pusherServer.trigger(
       toPusherKey(`user:${session.user.id}:remove_friend`),
       'remove_friend',
       friend
     )
-    await pusherServer.trigger(
+    pusherServer.trigger(
       toPusherKey(`user:${friend.id}:remove_friend`),
       'remove_friend',
       session.user

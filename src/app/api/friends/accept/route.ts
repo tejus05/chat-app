@@ -37,21 +37,23 @@ export async function POST(request: NextRequest) {
 
     // notify added user
 
-    await Promise.all([
       pusherServer.trigger(
         toPusherKey(`user:${idToAdd}:friends`),
         'new_friend',
         user
-      ),
+    );
+    
       pusherServer.trigger(
         toPusherKey(`user:${session.user.id}:friends`),
         'new_friend',
         friend
-      ),
-      db.sadd(`user:${session.user.id}:friends`, idToAdd),
-      db.sadd(`user:${idToAdd}:friends`, session.user.id),
-      db.srem(`user:${session.user.id}:incoming_friend_requests`, idToAdd),
-    ])
+    );
+    
+    await db.sadd(`user:${session.user.id}:friends`, idToAdd);
+    
+    await db.sadd(`user:${idToAdd}:friends`, session.user.id);
+    
+    await db.srem(`user:${session.user.id}:incoming_friend_requests`, idToAdd);
 
     return NextResponse.json({
       message: "OK"

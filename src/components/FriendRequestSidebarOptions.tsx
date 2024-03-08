@@ -4,7 +4,7 @@ import { pusherClient } from "@/lib/pusher";
 import { chatHrefConstructor, toPusherKey } from "@/lib/utils";
 import { User } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface FriendRequestSidebarOptionsProps {
@@ -21,6 +21,13 @@ const FriendRequestSidebarOptions = ({
   );
 
   const router = useRouter();
+  const pathname = usePathname();
+
+  const [friend, setFriend] = useState<User>();
+  const [deniedRequest, setDeniedRequest] = useState<{
+    senderId: string;
+    senderEmail: string;
+  }>();
 
   useEffect(() => {
     pusherClient.subscribe(
@@ -36,6 +43,7 @@ const FriendRequestSidebarOptions = ({
 
     const addedFriendHandler = (friend: User) => {
       setUnseenRequestCount((prev) => prev - 1);
+      setFriend(friend);
       router.push(`chat/${chatHrefConstructor(sessionId, friend.id)}`);
 
       router.refresh();
@@ -48,8 +56,10 @@ const FriendRequestSidebarOptions = ({
       senderId: string;
       senderEmail: string;
     }) => {
+      setDeniedRequest({ senderEmail, senderId });
       setUnseenRequestCount((prev) => prev - 1);
       router.refresh();
+      window.location.reload();
     };
 
     pusherClient.bind("incoming_friend_requests", friendRequestHandler);
@@ -69,7 +79,7 @@ const FriendRequestSidebarOptions = ({
       pusherClient.unbind("deny_friend", denyFriendHandler);
 
     };
-  }, [sessionId, router, unseenRequestCount]);
+  }, [sessionId, router, unseenRequestCount, pathname, friend, deniedRequest, setDeniedRequest, setFriend, setUnseenRequestCount]);
 
   return (
     <Link

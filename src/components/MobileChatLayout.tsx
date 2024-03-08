@@ -3,7 +3,7 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import { pusherClient } from "@/lib/pusher";
 import { SidebarOption } from "@/lib/types/typings";
-import { chatHrefConstructor, toPusherKey } from "@/lib/utils";
+import { toPusherKey } from "@/lib/utils";
 import { Dialog, Transition } from "@headlessui/react";
 import { Menu, X } from "lucide-react";
 import { Session } from "next-auth";
@@ -15,8 +15,6 @@ import FriendRequestSidebarOptions from "./FriendRequestSidebarOptions";
 import { Icons } from "./Icons";
 import SidebarChatList from "./SidebarChatList";
 import SignOutButton from "./SignOutButton";
-import toast from "react-hot-toast";
-import UnseenChatToast from "./UnseenChatToast";
 
 interface MobileChatLayoutProps {
   friends: User[];
@@ -43,6 +41,11 @@ const MobileChatLayout = ({
   const pathname = usePathname();
   const router = useRouter();
 
+  const [friend, setFriend] = useState<User>();
+  const [removedFriend, setRemovedFriend] = useState<User>();
+  const [deniedRequest, setDeniedRequest] = useState<{senderId: string, senderEmail: string}>();
+  const [message, setMessage] = useState<ExtendedMessage>();
+
   
 
   useEffect(() => {
@@ -53,17 +56,17 @@ const MobileChatLayout = ({
     pusherClient.subscribe(toPusherKey(`user:${session.user.id}:deny`));
 
     const friendRequestHandler = () => {
-      console.log("friendRequestHandler")
       setUnseenRequestCountState((prev) => prev + 1);
       router.refresh();
     };
 
     const addedFriendHandler = (friend: User) => {
-      console.log("addedFriendHandler")
       setUnseenRequestCountState((prev) => prev - 1);
-      router.push(`chat/${chatHrefConstructor(session.user.id, friend.id)}`);
-
+      // router.push(`chat/${chatHrefConstructor(session.user.id, friend.id)}`);
+      setFriend(friend);
+      
       router.refresh();
+      // window.location.reload();
     };
 
     const denyFriendHandler = ({
@@ -73,9 +76,10 @@ const MobileChatLayout = ({
       senderId: string;
       senderEmail: string;
     }) => {
-      console.log("denyFriendHandler")
+      setDeniedRequest({ senderEmail, senderId });
       setUnseenRequestCountState((prev) => prev - 1);
       router.refresh();
+      window.location.reload();
     };
 
     pusherClient.bind("incoming_friend_requests", friendRequestHandler);
@@ -93,7 +97,7 @@ const MobileChatLayout = ({
       pusherClient.unbind("deny_friend", denyFriendHandler);
 
     };
-  }, [session.user.id, router, setUnseenRequestCountState, pathname]);
+  }, [session, router, unseenRequestCount, pathname, friend, deniedRequest, setDeniedRequest, setFriend, setUnseenRequestCountState]);
 
 
   
@@ -106,33 +110,39 @@ const MobileChatLayout = ({
     pusherClient.subscribe(toPusherKey(`user:${session.user.id}:remove_friend`));
 
     const chatHandler = (message: ExtendedMessage) => {
-      const shouldNotify =
-        pathname !==
-        `/dashboard/chat/${chatHrefConstructor(session.user.id, message.senderId)}`;
+      // const shouldNotify =
+      //   pathname !==
+      //   `/dashboard/chat/${chatHrefConstructor(session.user.id, message.senderId)}`;
 
-      if (!shouldNotify) return;
+      // if (!shouldNotify) return;
 
-      toast.custom((t) => (
-        <UnseenChatToast
-          t={t}
-          sessionId={session.user.id}
-          senderId={message.senderId}
-          senderImg={message.senderImage}
-          senderMessage={message.text}
-          senderName={message.senderName}
-        />
-      ));
+      // toast.custom((t) => (
+      //   <UnseenChatToast
+      //     t={t}
+      //     sessionId={session.user.id}
+      //     senderId={message.senderId}
+      //     senderImg={message.senderImage}
+      //     senderMessage={message.text}
+      //     senderName={message.senderName}
+      //   />
+      // ));
+      
+      setMessage(message);
+      router.refresh();
     };
 
     const friendHandler = (friend: User) => {
-      toast.success(`Congratulation! You and ${friend.name} are now friends`);
-
+      // toast.success(`Congratulation! You and ${friend.name} are now friends`);
+      setFriend(friend);
+      setUnseenRequestCountState((prev) => prev - 1);
       router.refresh();
     };
 
     const removeFriendHandler = (friend: User) => {
       setOpen(false);
+      setRemovedFriend(friend);
       router.refresh();
+      window.location.reload();
     };
 
     pusherClient.bind("new_message", chatHandler);
@@ -152,7 +162,7 @@ const MobileChatLayout = ({
 
       pusherClient.unbind("remove_friend", removeFriendHandler);
     };
-  }, [pathname, session.user.id, router, unseenRequestCountState]);
+  }, [pathname, session, router, friend, message, setFriend, removedFriend, setRemovedFriend, unseenRequestCountState, setUnseenRequestCountState, setMessage]);
 
   useEffect(() => {
     setOpen(false);
@@ -254,7 +264,7 @@ const MobileChatLayout = ({
                                 <li>
                                   <FriendRequestSidebarOptions
                                     initialUnseenRequestCount={
-                                      unseenRequestCountState
+                                      unseenRequestCount
                                     }
                                     sessionId={session.user.id}
                                   />

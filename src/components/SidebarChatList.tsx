@@ -36,6 +36,12 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isRemovingFriend, setIsRemovingFriend] = useState(false);
 
+  const [unseenRequestCountState, setUnseenRequestCountState] =
+    useState<number>(0);
+    const [friend, setFriend] = useState<User>();
+    const [removedFriend, setRemovedFriend] = useState<User>();
+  const [message, setMessage] = useState<ExtendedMessage>();
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -47,6 +53,7 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
     pusherClient.subscribe(toPusherKey(`user:${sessionId}:remove_friend`));
 
     const chatHandler = (message: ExtendedMessage) => {
+      setMessage(message);
       const shouldNotify =
         pathname !==
         `/dashboard/chat/${chatHrefConstructor(sessionId, message.senderId)}`;
@@ -63,16 +70,22 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
           senderName={message.senderName}
         />
       ));
+
+      router.refresh();
     };
 
     const friendHandler = (friend: User) => {
       toast.success(`Congratulation! You and ${friend.name} are now friends`);
+      setUnseenRequestCountState(prev => prev - 1);
+      setFriend(friend);
 
       router.refresh();
     };
 
     const removeFriendHandler = (friend: User) => {
+      setRemovedFriend(friend);
       router.refresh();
+      window.location.reload();
     };
 
     pusherClient.bind("new_message", chatHandler);
@@ -92,7 +105,7 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
 
       pusherClient.unbind("remove_friend", removeFriendHandler);
     };
-  }, [pathname, sessionId, router]);
+  }, [pathname, sessionId, router, friend, message, setFriend, removedFriend, setRemovedFriend, unseenRequestCountState, setUnseenRequestCountState, setMessage]);
 
   useEffect(() => {
     setIsMounted(true);
