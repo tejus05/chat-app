@@ -6,7 +6,7 @@ import db from '@/db'
 import { z } from "zod";
 import authOptions from "../../auth/authOptions";
 import { pusherServer } from "@/lib/pusher";
-import { toPusherKey } from "@/lib/utils";
+import { chatHrefConstructor, toPusherKey } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,6 +48,9 @@ export async function POST(request: NextRequest) {
         'new_friend',
         friend
     );
+
+    // console.log(`http://localhost:3000/dashboard/chat/${chatHrefConstructor(session.user.id, friend.id)}`)
+    // NextResponse.redirect(`http://localhost:3000/dashboard/chat/${chatHrefConstructor(session.user.id, friend.id)}`);
     
     await db.sadd(`user:${session.user.id}:friends`, idToAdd);
     
