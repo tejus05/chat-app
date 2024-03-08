@@ -1,12 +1,11 @@
 "use client";
 
-import { pusherClient } from "@/lib/pusher";
 import { cn, toPusherKey } from "@/lib/utils";
 import { Message } from "@/lib/validations/messageValidation";
-import { format } from "date-fns";
-import { Check, Dot } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import { format } from "date-fns";
+import Image from "next/image";
+import { pusherClient } from "@/lib/pusher";
 
 interface MessagesProps{
   initialMessages: Message[],
@@ -21,34 +20,18 @@ const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage
   const scrolldownRef = useRef<HTMLDivElement | null>(null);
 
   const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const [isTyping, setIsTyping] = useState(true);
-  const [isLastMessage, setIsLastMessage] = useState(false);
-
-  // useEffect(() => {
-  //   // Function to toggle isTyping state
-  //   const toggleTyping = () => {
-  //     setIsTyping((prevIsTyping) => !prevIsTyping);
-  //   };
-
-  //   // Set initial state
-  //   toggleTyping();
-
-  //   // Set up the interval to toggle isTyping every 3 seconds
-  //   const intervalId = setInterval(toggleTyping, 3000);
-
-  //   // Cleanup function to clear the interval when the component unmounts
-  //   return () => clearInterval(intervalId);
-  // }, []); // Empty dependency array ensures this effect runs only once on mount
 
   const formatTimestamp = (timestamp: number) => {
     return format(timestamp, "HH:mm");
   };
 
   useEffect(() => {
-    pusherClient.subscribe(toPusherKey(`chat:${chatId}`));
+    pusherClient.subscribe(
+      toPusherKey(`chat:${chatId}`)
+    );
 
     const messageHandler = (message: Message) => {
-      setMessages((prev) => [message, ...prev]);
+      setMessages(prev=>[message, ...prev])
     };
 
     pusherClient.bind("incoming_message", messageHandler);
@@ -60,6 +43,7 @@ const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage
     };
   }, [chatId]);
 
+
   return (
     <div
       id="messages"
@@ -67,52 +51,8 @@ const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage
     >
       <div ref={scrolldownRef} />
 
-      {isTyping && (
-        <div
-          className={cn("flex items-end")}
-        >
-          <div
-            className={cn("flex flex-col space-y-2 text-base max-w-xs mx-1", {
-              "order-2 items-start": 1,
-            })}
-          >
-            <span
-              className={cn("px-4 py-2 rounded-lg rounded-bl-none", {
-                "bg-gray-200 text-gray-900": 1,
-              })}
-            >
-              <span className="">
-                ...
-              </span>
-              {/* <span className="ml-2 text-xs text-gray-400">
-                {formatTimestamp(message.timestamp)}
-              </span>
-              {isCurrentUser && <Check className="w-3 h-3 ml-auto" />} */}
-            </span>
-          </div>
-
-          <div
-            className={cn("relative w-6 h-6", {
-              "order-1": 1,
-            })}
-          >
-            <Image
-              fill
-              src={chatPartner.image}
-              alt="Profile picture"
-              referrerPolicy="no-referrer"
-              className="rounded-full"
-            />
-          </div>
-        </div>
-      )}
-
       {messages.map((message, index) => {
         const isCurrentUser = message.senderId === sessionId;
-
-        const lastMessage = messages[0];
-
-        const isLastMessage = message.id === lastMessage.id;
 
         const hasNextMessageFromSameUser =
           messages[index - 1]?.senderId === messages[index].senderId;
@@ -150,7 +90,6 @@ const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage
                   <span className="ml-2 text-xs text-gray-400">
                     {formatTimestamp(message.timestamp)}
                   </span>
-                  {isCurrentUser && <Check className="w-3 h-3 ml-auto" />}
                 </span>
               </div>
 

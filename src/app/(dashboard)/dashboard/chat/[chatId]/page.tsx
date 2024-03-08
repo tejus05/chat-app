@@ -3,7 +3,6 @@ import ChatInput from "@/components/ChatInput";
 import Messages from "@/components/Messages";
 import { fetchRedis } from "@/components/helpers/redis";
 import { messageSchemaArray } from "@/lib/validations/messageValidation";
-import { Circle } from "lucide-react";
 import { getServerSession } from "next-auth";
 import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
@@ -52,9 +51,9 @@ const getChatMessages = async (chatId: string) => {
 const ChatIdPage = async ({params: {chatId}}:ChatIdPageProps) => {
   const session = await getServerSession(authOptions);
   if (!session) return notFound();
-  
+
   const { user } = session;
-  
+
   const [userId1, userId2] = chatId.split("--");
 
   if (user.id !== userId1 && user.id !== userId2) return notFound();
@@ -74,7 +73,7 @@ const ChatIdPage = async ({params: {chatId}}:ChatIdPageProps) => {
   return (
     <div className="flex-1 justify-between flex flex-col h-full max-h-[calc(100vh-6rem)]">
       <div className="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">
-        <div className="relative flex items-center space-x-4 w-full">
+        <div className="relative flex items-center space-x-4">
           <div className="relative">
             <div className="relative w-6 sm:w-10 h-6 sm:h-10">
               <Image
@@ -89,16 +88,12 @@ const ChatIdPage = async ({params: {chatId}}:ChatIdPageProps) => {
 
           <div className="flex flex-col leading-tight">
             <div className="text-xl flex items-center">
-              <span className="text-gray-700 mr-3 font-semibold sm:text-xl text-sm">
+              <span className="text-gray-700 mr-3 font-semibold">
                 {chatPartner.name}
               </span>
             </div>
 
-            <span className="text-xs sm:text-sm text-gray-600">{chatPartner.email}</span>
-          </div>
-          <div className="absolute right-3 flex items-center text-sm sm:text-lg">
-            
-            <Circle className="bg-green-500 h-3 w-3 sm:h-4 sm:w-4 text-green-500 rounded-full ml-1.5" />
+            <span className="text-sm text-gray-600">{chatPartner.email}</span>
           </div>
         </div>
       </div>
