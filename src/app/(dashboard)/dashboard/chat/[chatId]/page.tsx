@@ -3,7 +3,9 @@ import ChatInput from "@/components/ChatInput";
 import Messages from "@/components/Messages";
 import { fetchRedis } from "@/components/helpers/redis";
 import { messageSchemaArray } from "@/lib/validations/messageValidation";
+import { Circle } from "lucide-react";
 import { getServerSession } from "next-auth";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 
@@ -47,8 +49,8 @@ const getChatMessages = async (chatId: string) => {
     return notFound();
   }
 }
-
-const ChatIdPage = async ({params: {chatId}}:ChatIdPageProps) => {
+// hint : when a user goes to our chat page, set the user:userId:friendId:isUserOnline to true and broadcast the same to OnlineStatus page and set status && user-left too or use watchlist
+const ChatIdPage = async ({ params: { chatId } }: ChatIdPageProps) => {
   const session = await getServerSession(authOptions);
   if (!session) return notFound();
 
@@ -58,13 +60,19 @@ const ChatIdPage = async ({params: {chatId}}:ChatIdPageProps) => {
 
   if (user.id !== userId1 && user.id !== userId2) return notFound();
 
-  
   const chatPartnerId = user.id === userId1 ? userId2 : userId1;
-  const chatPartnerRaw = (await fetchRedis("get", `user:${chatPartnerId}`)) as string;
-  
+  const chatPartnerRaw = (await fetchRedis(
+    "get",
+    `user:${chatPartnerId}`
+  )) as string;
+
   const chatPartner = JSON.parse(chatPartnerRaw) as User;
-  
-  const isFriend = await fetchRedis("sismember", `user:${session.user.id}:friends`, chatPartnerId);
+
+  const isFriend = await fetchRedis(
+    "sismember",
+    `user:${session.user.id}:friends`,
+    chatPartnerId
+  );
 
   if (!isFriend) return redirect("/dashboard");
 
@@ -73,7 +81,7 @@ const ChatIdPage = async ({params: {chatId}}:ChatIdPageProps) => {
   return (
     <div className="flex-1 justify-between flex flex-col h-full max-h-[calc(100vh-6rem)]">
       <div className="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">
-        <div className="relative flex items-center space-x-4">
+        <div className="relative flex items-center space-x-4 w-full">
           <div className="relative">
             <div className="relative w-6 sm:w-10 h-6 sm:h-10">
               <Image
@@ -88,12 +96,17 @@ const ChatIdPage = async ({params: {chatId}}:ChatIdPageProps) => {
 
           <div className="flex flex-col leading-tight">
             <div className="text-xl flex items-center">
-              <span className="text-gray-700 mr-3 font-semibold">
+              <span className="text-gray-700 mr-3 font-semibold sm:text-xl text-sm">
                 {chatPartner.name}
               </span>
             </div>
 
-            <span className="text-sm text-gray-600">{chatPartner.email}</span>
+            <span className="text-xs sm:text-sm text-gray-600">
+              {chatPartner.email}
+            </span>
+          </div>
+          <div className="absolute right-3 flex items-center text-sm sm:text-lg">
+            <Circle className="bg-green-500 h-3 w-3 sm:h-4 sm:w-4 text-green-500 rounded-full ml-1.5" />
           </div>
         </div>
       </div>
@@ -108,6 +121,6 @@ const ChatIdPage = async ({params: {chatId}}:ChatIdPageProps) => {
       <ChatInput chatId={chatId} chatPartner={chatPartner} />
     </div>
   );
-}
+};
 
-export default ChatIdPage
+export default ChatIdPage;

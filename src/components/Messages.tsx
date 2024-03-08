@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
 import Image from "next/image";
 import { pusherClient } from "@/lib/pusher";
+import { Check } from "lucide-react";
 
 interface MessagesProps{
   initialMessages: Message[],
@@ -18,6 +19,9 @@ interface MessagesProps{
 
 const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage}:MessagesProps) => {
   const scrolldownRef = useRef<HTMLDivElement | null>(null);
+  
+  const [isTyping, setIsTyping] = useState(true);
+  const [isLastMessage, setIsLastMessage] = useState(false);
 
   const [messages, setMessages] = useState<Message[]>(initialMessages);
 
@@ -51,8 +55,48 @@ const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage
     >
       <div ref={scrolldownRef} />
 
+      {isTyping && (
+        <div className={cn("flex items-end")}>
+          <div
+            className={cn("flex flex-col space-y-2 text-base max-w-xs mx-1", {
+              "order-2 items-start": 1,
+            })}
+          >
+            <span
+              className={cn("px-4 py-2 rounded-lg rounded-bl-none", {
+                "bg-gray-200 text-gray-900": 1,
+              })}
+            >
+              <span className="">...</span>
+              {/* <span className="ml-2 text-xs text-gray-400">
+                {formatTimestamp(message.timestamp)}
+              </span>
+              {isCurrentUser && <Check className="w-3 h-3 ml-auto" />} */}
+            </span>
+          </div>
+
+          <div
+            className={cn("relative w-6 h-6", {
+              "order-1": 1,
+            })}
+          >
+            <Image
+              fill
+              src={chatPartner.image}
+              alt="Profile picture"
+              referrerPolicy="no-referrer"
+              className="rounded-full"
+            />
+          </div>
+        </div>
+      )}
+
       {messages.map((message, index) => {
         const isCurrentUser = message.senderId === sessionId;
+
+        const lastMessage = messages[0];
+
+        const isLastMessage = message.id === lastMessage.id;
 
         const hasNextMessageFromSameUser =
           messages[index - 1]?.senderId === messages[index].senderId;
@@ -90,6 +134,7 @@ const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage
                   <span className="ml-2 text-xs text-gray-400">
                     {formatTimestamp(message.timestamp)}
                   </span>
+                  {isCurrentUser && <Check className="w-3 h-3 ml-auto" />}
                 </span>
               </div>
 
