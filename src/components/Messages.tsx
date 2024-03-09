@@ -1,13 +1,12 @@
 "use client";
 
-import { cn, toPusherKey } from "@/lib/utils";
-import { Message } from "@/lib/validations/messageValidation";
+import { toPusherKey } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
-import { format } from "date-fns";
-import Image from "next/image";
+
 import { pusherClient } from "@/lib/pusher";
-import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
+import MessageElement from "./Message";
+import { Message } from "@/lib/validations/messageValidation";
 
 interface MessagesProps{
   initialMessages: Message[],
@@ -27,9 +26,7 @@ const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage
 
   const [messages, setMessages] = useState<Message[]>(initialMessages);
 
-  const formatTimestamp = (timestamp: number) => {
-    return format(timestamp, "HH:mm");
-  };
+
 
   useEffect(() => {
     pusherClient.subscribe(
@@ -49,6 +46,16 @@ const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage
     };
   }, [chatId, router]);
 
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return "";
+  }
+
 
   return (
     <div
@@ -57,7 +64,7 @@ const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage
     >
       <div ref={scrolldownRef} />
 
-      {isTyping && (
+      {/* {isTyping && (
         <div className={cn("flex items-end")}>
           <div
             className={cn("flex flex-col space-y-2 text-base max-w-xs mx-1", {
@@ -70,10 +77,10 @@ const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage
               })}
             >
               <span className="">...</span>
-              {/* <span className="ml-2 text-xs text-gray-400">
+              <span className="ml-2 text-xs text-gray-400">
                 {formatTimestamp(message.timestamp)}
               </span>
-              {isCurrentUser && <Check className="w-3 h-3 ml-auto" />} */}
+              {isCurrentUser && <Check className="w-3 h-3 ml-auto" />}
             </span>
           </div>
 
@@ -91,7 +98,7 @@ const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage
             />
           </div>
         </div>
-      )}
+      )} */}
 
       {messages.map((message, index) => {
         const isCurrentUser = message.senderId === sessionId;
@@ -104,61 +111,13 @@ const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage
           messages[index - 1]?.senderId === messages[index].senderId;
 
         return (
-          <div
-            className="chat-message"
-            key={`${message.id}-${message.timestamp}`}
-          >
-            <div
-              className={cn("flex items-end", {
-                "justify-end": isCurrentUser,
-              })}
-            >
-              <div
-                className={cn(
-                  "flex flex-col space-y-2 text-base max-w-xs mx-1",
-                  {
-                    "order-1 items-end": isCurrentUser,
-                    "order-2 items-start": !isCurrentUser,
-                  }
-                )}
-              >
-                <span
-                  className={cn("px-4 py-2 rounded-lg inline-block", {
-                    "bg-indigo-600 text-white": isCurrentUser,
-                    "bg-gray-200 text-gray-900": !isCurrentUser,
-                    "rounded-br-none":
-                      !hasNextMessageFromSameUser && isCurrentUser,
-                    "rounded-bl-none":
-                      !hasNextMessageFromSameUser && !isCurrentUser,
-                  })}
-                >
-                  {message.text}{" "}
-                  <span className="ml-2 text-xs text-gray-400">
-                    {formatTimestamp(message.timestamp)}
-                  </span>
-                  {isCurrentUser && <Check className="w-3 h-3 ml-auto" />}
-                </span>
-              </div>
-
-              <div
-                className={cn("relative w-6 h-6", {
-                  "order-2": isCurrentUser,
-                  "order-1": !isCurrentUser,
-                  invisible: hasNextMessageFromSameUser,
-                })}
-              >
-                <Image
-                  fill
-                  src={
-                    isCurrentUser ? (sessionImage as string) : chatPartner.image
-                  }
-                  alt="Profile picture"
-                  referrerPolicy="no-referrer"
-                  className="rounded-full"
-                />
-              </div>
-            </div>
-          </div>
+          <MessageElement
+            hasNextMessageFromSameUser={hasNextMessageFromSameUser}
+            isCurrentUser={isCurrentUser}
+            message={message}
+            chatPartner={chatPartner}
+            sessionImage={sessionImage}
+          />
         );
       })}
     </div>
