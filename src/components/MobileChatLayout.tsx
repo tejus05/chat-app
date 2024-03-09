@@ -97,7 +97,7 @@ const MobileChatLayout = ({
       pusherClient.unbind("deny_friend", denyFriendHandler);
 
     };
-  }, [session, router, unseenRequestCount, pathname, friend, deniedRequest, setDeniedRequest, setFriend, setUnseenRequestCountState]);
+  }, [session, router, unseenRequestCountState, pathname, friend, deniedRequest, setDeniedRequest, setFriend, setUnseenRequestCountState, unseenRequestCount]);
 
 
   
@@ -162,7 +162,7 @@ const MobileChatLayout = ({
 
       pusherClient.unbind("remove_friend", removeFriendHandler);
     };
-  }, [pathname, session, router, friend, message, setFriend, removedFriend, setRemovedFriend, unseenRequestCountState, setUnseenRequestCountState, setMessage]);
+  }, [pathname, session, router, friend, message, setFriend, removedFriend, setRemovedFriend, unseenRequestCountState, setUnseenRequestCountState, setMessage, unseenRequestCount]);
 
   useEffect(() => {
     setOpen(false);
@@ -264,7 +264,7 @@ const MobileChatLayout = ({
                                 <li>
                                   <FriendRequestSidebarOptions
                                     initialUnseenRequestCount={
-                                      unseenRequestCount
+                                      unseenRequestCountState
                                     }
                                     sessionId={session.user.id}
                                   />

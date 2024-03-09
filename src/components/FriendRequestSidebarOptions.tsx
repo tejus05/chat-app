@@ -81,6 +81,8 @@ const FriendRequestSidebarOptions = ({
     };
   }, [sessionId, router, unseenRequestCount, pathname, friend, deniedRequest, setDeniedRequest, setFriend, setUnseenRequestCount]);
 
+  console.log(unseenRequestCount)
+
   return (
     <Link
       href="/dashboard/requests"
