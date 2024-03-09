@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import Image from "next/image";
 import { pusherClient } from "@/lib/pusher";
 import { Check } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 interface MessagesProps{
   initialMessages: Message[],
@@ -19,6 +20,7 @@ interface MessagesProps{
 
 const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage}:MessagesProps) => {
   const scrolldownRef = useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
   
   const [isTyping, setIsTyping] = useState(true);
   const [isLastMessage, setIsLastMessage] = useState(false);
@@ -45,7 +47,7 @@ const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage
 
       pusherClient.unbind("incoming_message", messageHandler);
     };
-  }, [chatId]);
+  }, [chatId, router]);
 
 
   return (

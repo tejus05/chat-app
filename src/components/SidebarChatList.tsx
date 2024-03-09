@@ -33,8 +33,14 @@ interface ExtendedMessage extends Message {
 
 const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
   const [isMounted, setIsMounted] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isRemovingFriend, setIsRemovingFriend] = useState(false);
+  const [isOpen, setIsOpen] = useState<{ friendId?: string; isOpen: boolean }>({
+    isOpen: false,
+  });
+  const [isRemovingFriend, setIsRemovingFriend] = useState<{
+    friendId?: string;
+    isRemoving: boolean;
+  }>({ isRemoving: false });
+
 
   const [unseenRequestCountState, setUnseenRequestCountState] =
     useState<number>(0);
@@ -117,7 +123,10 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
 
   const removeFriend = async (friend: User) => {
     try {
-      setIsRemovingFriend(true);
+      setIsRemovingFriend({
+        friendId: friend.id, 
+        isRemoving: true,
+      });
       await axios.post("/api/friends/delete", {
         id: friend.id,
       });
@@ -126,13 +135,13 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
       toast.error("Could not remove friend. Please try again. ");
       console.log(error);
     } finally {
-      setIsRemovingFriend(false);
+      setIsRemovingFriend({ isRemoving: false });
     }
   };
 
   return (
     <ul role="list" className="max-h-[25rem] overflow-y-auto -mx-2 space-y-1">
-      {friends.sort().map((friend) => {
+      {friends.map((friend) => {
         return (
           <li key={friend.id}>
             <a
@@ -145,20 +154,29 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
               {friend.name}
 
               <AlertDialog
-                open={isOpen}
-                onOpenChange={() => setIsOpen((prev) => !prev)}
+                open={isOpen.isOpen && isOpen.friendId === friend.id} 
+                onOpenChange={() =>
+                  setIsOpen((prev) => ({
+                    isOpen: !prev.isOpen,
+                    friendId: undefined, 
+                  }))
+                }
               >
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="link"
+                    className="hover:text-rose-600"
                     onClick={(e: MouseEvent) => {
                       e.stopPropagation();
                       e.preventDefault();
-                      setIsOpen(true);
+                      setIsOpen({
+                        friendId: friend.id, // Set the friendId to the current friend's ID
+                        isOpen: true,
+                      });
                     }}
-                    className="hover:text-rose-600"
                   >
-                    {isRemovingFriend ? (
+                    {isRemovingFriend.isRemoving &&
+                    isRemovingFriend.friendId === friend.id ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     ) : (
                       <Trash className="h-4 w-4" />

@@ -9,9 +9,12 @@ import { useState } from "react";
 import { z } from "zod";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from "next/navigation";
 
 const AddFriendButton = () => {
   const [showSuccessState, setShowSuccessState] = useState(false);
+
+  const router = useRouter();
 
 
   type TAddFriendValidator = z.infer<typeof addFriendValidator>;
@@ -36,7 +39,9 @@ const AddFriendButton = () => {
       setTimeout(() => {
         setShowSuccessState(false)
       }, 3000);
+      router.refresh();
     } catch (error) {
+      router.refresh();
       if (error instanceof z.ZodError) {
         setError("email", { message: error.message });
         setTimeout(() => {
