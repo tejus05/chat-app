@@ -56,6 +56,7 @@ const FriendRequestSidebarOptions = ({
       senderId: string;
       senderEmail: string;
     }) => {
+      console.log("denied from navbar");
       setDeniedRequest({ senderEmail, senderId });
       setUnseenRequestCount((prev) => prev - 1);
       router.refresh();

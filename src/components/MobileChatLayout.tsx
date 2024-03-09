@@ -76,6 +76,7 @@ const MobileChatLayout = ({
       senderId: string;
       senderEmail: string;
     }) => {
+      console.log("denied from mobile")
       setDeniedRequest({ senderEmail, senderId });
       setUnseenRequestCountState((prev) => prev - 1);
       router.refresh();
@@ -166,6 +167,12 @@ const MobileChatLayout = ({
 
   useEffect(() => {
     setOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (pathname.includes("add") || pathname.includes("request")) {
+      router.refresh();
+    }
   }, [pathname]);
 
   return (

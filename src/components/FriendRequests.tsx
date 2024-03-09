@@ -33,7 +33,7 @@ const FriendRequests = ({
       senderId,
       senderEmail,
     }: IncomingFriendRequests) => {
-      // console.log("function got called");
+      console.log("function got called");
       setFriendRequests((prev) => [...prev, { senderId, senderEmail }]);
     };
 
