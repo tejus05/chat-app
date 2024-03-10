@@ -76,7 +76,7 @@ const MobileChatLayout = ({
       senderId: string;
       senderEmail: string;
     }) => {
-      console.log("denied from mobile")
+      // console.log("denied from mobile")
       setDeniedRequest({ senderEmail, senderId });
       setUnseenRequestCountState((prev) => prev - 1);
       router.refresh();

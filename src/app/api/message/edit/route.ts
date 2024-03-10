@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     const sender = JSON.parse(rawSender) as User;
 
     const timestamp = Date.now();
-    console.log("reached")
+    // console.log("reached")
 
     const dbMessagesRaw = await fetchRedis("zrange", `chat:${chatId}:messages`, 0, -1) as string[];
 
@@ -47,6 +47,15 @@ export async function POST(request: NextRequest) {
     const deletedMessage = await db.zrem(`chat:${chatId}:messages`, dbMessage)
 
     if (!deletedMessage) return new NextResponse("Could not update the message. ", { status: 400 });
+
+    pusherServer.trigger(
+      toPusherKey(`chat:${chatId}:${messageId}`),
+      "edit_message",
+      {
+        messageFromSocket: updatedMessage,
+        chatId
+      }
+    )
 
     const data = await db.zadd(`chat:${chatId}:messages`, {
       score: timestamp,

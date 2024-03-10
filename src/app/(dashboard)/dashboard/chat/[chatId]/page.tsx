@@ -48,7 +48,7 @@ const getChatMessages = async (chatId: string) => {
     return notFound();
   }
 }
-// hint : when a user goes to our chat page, set the user:userId:friendId:isUserOnline to true and broadcast the same to OnlineStatus page and set status && user-left too or use watchlist
+
 const ChatIdPage = async ({ params: { chatId } }: ChatIdPageProps) => {
   const session = await getServerSession(authOptions);
   if (!session) return notFound();

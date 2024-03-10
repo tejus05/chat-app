@@ -133,7 +133,7 @@ const SidebarChatList = ({ friends, sessionId }: SidebarChatListProps) => {
       router.refresh();
     } catch (error) {
       toast.error("Could not remove friend. Please try again. ");
-      console.log(error);
+      // console.log(error);
     } finally {
       setIsRemovingFriend({ isRemoving: false });
     }
