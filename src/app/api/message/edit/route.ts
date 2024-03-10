@@ -28,23 +28,23 @@ export async function POST(request: NextRequest) {
     const sender = JSON.parse(rawSender) as User;
 
     const timestamp = Date.now();
+    console.log("reached")
 
-    const dbMessagesRaw = await fetchRedis("zrange", `chat:${chatId}:messages`, 0, -1) as string;
+    const dbMessagesRaw = await fetchRedis("zrange", `chat:${chatId}:messages`, 0, -1) as string[];
 
-    const dbMessages = JSON.parse(dbMessagesRaw) as Message[];
+    const dbMessages = dbMessagesRaw.map(message => JSON.parse(message) as Message) as Message[];
 
     const dbMessage = dbMessages.find(message => message.id === messageId) as Message;
+
 
     if (!dbMessage) return new NextResponse("Message does not exist. ", { status: 400 });
 
     const updatedMessage: Message = {
       ...dbMessage,
       text
-    } 
-
-    const score = dbMessage.timestamp;
+    }
     
-    const deletedMessage = await db.zrem(`chat:${chatId}:messages`, dbMessage.id)
+    const deletedMessage = await db.zrem(`chat:${chatId}:messages`, dbMessage)
 
     if (!deletedMessage) return new NextResponse("Could not update the message. ", { status: 400 });
 
