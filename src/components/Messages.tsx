@@ -112,11 +112,13 @@ const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage
 
         return (
           <MessageElement
+            key={message.id}
             hasNextMessageFromSameUser={hasNextMessageFromSameUser}
             isCurrentUser={isCurrentUser}
             message={message}
             chatPartner={chatPartner}
             sessionImage={sessionImage}
+            chatId={chatId}
           />
         );
       })}

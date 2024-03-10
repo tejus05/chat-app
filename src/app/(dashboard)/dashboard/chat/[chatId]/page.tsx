@@ -5,7 +5,6 @@ import { fetchRedis } from "@/components/helpers/redis";
 import { messageSchemaArray } from "@/lib/validations/messageValidation";
 import { Circle } from "lucide-react";
 import { getServerSession } from "next-auth";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 
