@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     if (!deletedMessage) return new NextResponse("Could not update the message. ", { status: 400 });
 
-    pusherServer.trigger(
+    await pusherServer.trigger(
       toPusherKey(`chat:${chatId}:${messageId}`),
       "edit_message",
       {

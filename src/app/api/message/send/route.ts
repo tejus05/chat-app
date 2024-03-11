@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
 
     const message = messageValidation.data;
 
-    pusherServer.trigger(
+    await pusherServer.trigger(
       (
         toPusherKey(`chat:${chatId}`)
       ),
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       message
     )
 
-    pusherServer.trigger(
+    await pusherServer.trigger(
       (
         toPusherKey(`user:${friendId}:chats`)
       ),

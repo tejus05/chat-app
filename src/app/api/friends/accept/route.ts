@@ -37,13 +37,13 @@ export async function POST(request: NextRequest) {
 
     // notify added user
 
-      pusherServer.trigger(
+      await pusherServer.trigger(
         toPusherKey(`user:${idToAdd}:friends`),
         'new_friend',
         user
     );
     
-      pusherServer.trigger(
+      await pusherServer.trigger(
         toPusherKey(`user:${session.user.id}:friends`),
         'new_friend',
         friend

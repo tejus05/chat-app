@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     if (dbMessage.senderId !== session.user.id) return new NextResponse("Unauthorised", { status: 401 });
 
-    pusherServer.trigger(
+    await pusherServer.trigger(
       toPusherKey(`chat:${chatId}:${messageId}`),
       "delete_message",
       {
