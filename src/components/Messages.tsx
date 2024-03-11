@@ -7,19 +7,17 @@ import { pusherClient } from "@/lib/pusher";
 import { useRouter } from "next/navigation";
 import MessageElement from "./Message";
 import { Message } from "@/lib/validations/messageValidation";
-import { Session } from "next-auth";
 
 interface MessagesProps{
   initialMessages: Message[],
   sessionId: string,
   chatId: string,
   chatPartner: User,
-  sessionImage: string,
-  session: Session
+  sessionImage: string
 }
 
 
-const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage, session}:MessagesProps) => {
+const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage}:MessagesProps) => {
   const scrolldownRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
   
@@ -27,36 +25,24 @@ const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage
   const [isLastMessage, setIsLastMessage] = useState(false);
 
   const [messages, setMessages] = useState<Message[]>(initialMessages);
-  
-  const [userWatchList, setUserWatchList] = useState(session.user.watchlist);
+
+
 
   useEffect(() => {
     pusherClient.subscribe(
       toPusherKey(`chat:${chatId}`)
     );
 
-    pusherClient.subscribe(toPusherKey(`user:${sessionId}:watchlist`));
-    
     const messageHandler = (message: Message) => {
       setMessages(prev=>[message, ...prev])
     };
 
     pusherClient.bind("incoming_message", messageHandler);
-    
-    const watchlistEventHandler = (user: User) => {
-      setUserWatchList(user.watchlist);
-    };
-    
-    pusherClient.user.watchlist.bind("watchlist", watchlistEventHandler);
-    
+
     return () => {
       pusherClient.unsubscribe(toPusherKey(`chat:${chatId}`));
 
-      pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:watchlist`));
-      
       pusherClient.unbind("incoming_message", messageHandler);
-
-      pusherClient.user.watchlist.unbind("watchlist", watchlistEventHandler);
     };
   }, [chatId, router]);
 
@@ -70,7 +56,6 @@ const Messages = ({initialMessages, sessionId, chatId, chatPartner, sessionImage
     return "";
   }
 
-  console.log(session.user.watchlist)
 
   return (
     <div

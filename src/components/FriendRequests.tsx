@@ -50,11 +50,6 @@ const FriendRequests = ({
   const acceptFriend = async (senderId: string) => {
     await axios.post("/api/friends/accept", { id: senderId });
 
-    
-    const addToWatchList = await axios.post(`/api/watchlist`, {
-      userId: senderId,
-    });
-
     setFriendRequests((prev) =>
       prev.filter((request) => request.senderId !== senderId)
     );

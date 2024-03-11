@@ -34,7 +34,6 @@ const authOptions: NextAuthOptions = {
         name: dbUser.name,
         email: dbUser.email,
         picture: dbUser.image,
-        watchlist: dbUser.watchlist,
       }
     },
     async session({ session, token }) {
@@ -43,7 +42,6 @@ const authOptions: NextAuthOptions = {
         session.user.name = token.name;
         session.user.email = token.email;
         session.user.image = token.picture;
-        session.user.watchlist = token.watchlist as string[];
       }
 
       return session;
