@@ -57,6 +57,7 @@ const MessageElement = ({
 }: MessageProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [chatIdState, setChatIdState] = useState(chatId);
+  const [userWatchList, setUserWatchList] = useState();
   const [messageState, setMessageState] = useState<{
     text: string;
     deleted: boolean;
@@ -108,7 +109,7 @@ const MessageElement = ({
       messageFromSocket: Message;
       chatId: string;
     }) => {
-      console.log(messageFromSocket)
+      // console.log(messageFromSocket)
       if (message.id === messageFromSocket.id) {
         setMessageState({
           text: messageFromSocket.text,
