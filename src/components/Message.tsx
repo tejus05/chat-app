@@ -136,6 +136,7 @@ const MessageElement = ({
     message,
     messageState,
     setMessageState,
+    router
   ]);
 
   useEffect(() => {

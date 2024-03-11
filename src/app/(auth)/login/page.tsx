@@ -14,7 +14,9 @@ const LoginPage = () => {
   const loginWithGoogle = async () => {
     setIsLoading(true);
     try {
-      await signIn('google');
+      await signIn("google", {
+        callbackUrl: "https://chat-app-pi-tawny.vercel.app/dashboard",
+      });
     } catch (error) {
       toast.error("Something went wrong with your login ");
     }
