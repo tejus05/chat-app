@@ -104,9 +104,6 @@ const ChatIdPage = async ({ params: { chatId } }: ChatIdPageProps) => {
               {chatPartner.email}
             </span>
           </div>
-          <div className="absolute right-3 flex items-center text-sm sm:text-lg">
-            <Circle className="bg-green-500 h-3 w-3 sm:h-4 sm:w-4 text-green-500 rounded-full ml-1.5" />
-          </div>
         </div>
       </div>
 

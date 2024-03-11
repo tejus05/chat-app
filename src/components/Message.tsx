@@ -142,7 +142,7 @@ const MessageElement = ({
     form.reset({
       content: message.text,
     });
-  }, [message.text, isEditing]);
+  }, [message.text, isEditing, form]);
 
   const {
     formState: { isSubmitting },
@@ -301,8 +301,8 @@ const MessageElement = ({
                       </Button>
                     </form>
                     <span className="text-[10px] mt-1 text-zinc-400 tracking-tighter">
-                      To save, press "Enter". To cancel, press "Esc" or click
-                      anywhere.
+                      To save&#44; press &quot;Enter&quot;&sdot; To cancel&#44;
+                      press &quot;Esc&quot; or click anywhere&dot;
                     </span>
                   </Form>
                 )}

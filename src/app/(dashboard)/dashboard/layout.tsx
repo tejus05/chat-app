@@ -12,6 +12,7 @@ import { fetchRedis } from "@/components/helpers/redis";
 import { getFriendsByUserId } from "@/components/helpers/getFriendsByUserId";
 import SidebarChatList from "@/components/SidebarChatList";
 import MobileChatLayout from "@/components/MobileChatLayout";
+import UsersList from "@/components/UsersList";
 
 export const metadata = {
   title: "Chat App | Dashboard",
@@ -97,6 +98,12 @@ const DashboardLayout = async ({children}:PropsWithChildren) => {
                   <FriendRequestSidebarOptions
                     sessionId={session.user.id}
                     initialUnseenRequestCount={unseenRequestCount}
+                  />
+                </li>
+                <li>
+                  <UsersList
+                    session={session}
+                    friends={friends}
                   />
                 </li>
               </ul>

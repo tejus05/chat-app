@@ -15,6 +15,7 @@ import FriendRequestSidebarOptions from "./FriendRequestSidebarOptions";
 import { Icons } from "./Icons";
 import SidebarChatList from "./SidebarChatList";
 import SignOutButton from "./SignOutButton";
+import axios from "axios";
 
 interface MobileChatLayoutProps {
   friends: User[];
@@ -173,7 +174,21 @@ const MobileChatLayout = ({
     if (pathname.includes("add") || pathname.includes("request")) {
       router.refresh();
     }
-  }, [pathname]);
+  }, [pathname, router]);
+
+  useEffect(() => {
+    async function postUser() {
+      try {
+        await axios.post("/api/dashboard", {
+          userId: session.user.id,
+        });
+      } catch (error) {
+        console.error("Error making Axios request:", error);
+      }
+    }
+
+    postUser();
+  }, [session.user.id]);
 
   return (
     <div className="fixed bg-zinc-50 border-b border-zinc-200 top-0 inset-x-0 py-2 px-4">

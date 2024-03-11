@@ -7,8 +7,9 @@ import { getServerSession } from "next-auth";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import UsersList from "@/components/UsersList";
 
-const DashboardPage = async ({}) => {
+const DashboardPage = async () => {
   const session = await getServerSession(authOptions);
   if (!session) notFound();
 
@@ -23,6 +24,7 @@ const DashboardPage = async ({}) => {
         -1
       )) as string[];
 
+      if (!lastMessageRaw) return;
       const lastMessage = JSON.parse(lastMessageRaw) as Message;
 
       return {
@@ -38,7 +40,14 @@ const DashboardPage = async ({}) => {
       {friendsWithLastMessage.length === 0 ? (
         <p className="text-sm text-zinc-500">Nothing to show here...</p>
       ) : (
-        friendsWithLastMessage.map((friend) => (
+        friendsWithLastMessage.map((friend) => {
+          if (!friend?.lastMessage) return (
+            <div>
+              No recent chats exist. Start texting a friend.
+            </div>
+          );
+
+          return (
           <div
             key={friend.id}
             className="relative bg-zinc-50 border border-zinc-200 p-3 rounded-md my-7"
@@ -79,8 +88,15 @@ const DashboardPage = async ({}) => {
               </div>
             </Link>
           </div>
-        ))
+          )
+        })
       )}
+      <div className="block md:hidden">
+        <UsersList
+          friends={friends}
+          session={session}
+        />
+      </div>
     </div>
   );
 };

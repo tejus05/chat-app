@@ -5,11 +5,11 @@ import axios, { AxiosError } from 'axios';
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 const AddFriendButton = () => {
   const [showSuccessState, setShowSuccessState] = useState(false);
@@ -19,9 +19,21 @@ const AddFriendButton = () => {
 
   type TAddFriendValidator = z.infer<typeof addFriendValidator>;
 
-  const { register, handleSubmit, setError, formState:{errors} } = useForm<TAddFriendValidator>({
+  const form = useForm<TAddFriendValidator>({
     resolver: zodResolver(addFriendValidator)
   });
+
+  const { register, handleSubmit, setError, formState: { errors } } = form;
+
+  const searchParams = useSearchParams();
+
+  const senderId = searchParams.get("senderId");
+
+  useEffect(() => {
+    if (senderId) {
+      form.setValue("email",senderId);
+    }
+  }, [senderId, form]);
 
   const addFriend = async (email: TAddFriendValidator) => {
     try {
