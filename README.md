@@ -2,6 +2,8 @@
 
 This is a real-time chat application built using Next.js 14 with the App Router, Upstash Redis for data storage, and Pusher for real-time communication. The app features various functionalities including adding, removing, denying or accepting users in real-time, real-time chatting, editing and deleting messages, and adding logged-in users from the dashboard on mobile and sidebar on laptops. It is also optimized for mobile devices and is fully responsive.
 
+Click here to visit the [live website](https://chat-app-pi-tawny.vercel.app)
+
 ## Features
 
 - **Real-Time Chatting**: Users can engage in real-time conversations with each other.
