@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Real-Time Chat App
 
-## Getting Started
+This is a real-time chat application built using Next.js 14 with the App Router, Upstash Redis for data storage, and Pusher for real-time communication. The app features various functionalities including adding, removing, denying or accepting users in real-time, real-time chatting, editing and deleting messages, and adding logged-in users from the dashboard on mobile and sidebar on laptops. It is also optimized for mobile devices and is fully responsive.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Real-Time Chatting**: Users can engage in real-time conversations with each other.
+- **User Management**: Admins can add, remove, deny or accept users in real-time.
+- **Message Editing**: Users can edit their messages in real-time.
+- **Message Deletion**: Users can delete messages in real-time.
+- **Responsive Design**: The app is optimized for mobile devices and is fully responsive.
+- **User Addition**: Logged-in users can be added from the dashboard on mobile and from the sidebar on laptops.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Technologies Used
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Next.js 14**: A React framework for building server-side rendered and static web applications.
+- **NextAuth**: An authentication library for Next.js applications.
+- **Upstash Redis**: A managed Redis service for caching, real-time analytics, and session storage.
+- **Pusher**: A hosted service that simplifies real-time messaging between servers, clients, and mobile devices.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Installation
 
-## Learn More
+1. Clone the repository:
 
-To learn more about Next.js, take a look at the following resources:
+    ```bash
+    git clone https://github.com/tejus05/chat-app.git
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Install dependencies:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+    ```bash
+    cd chat-app
+    npm install
+    ```
 
-## Deploy on Vercel
+3. Set up environment variables. You'll need to obtain API keys from Upstash Redis and Pusher.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    ```bash
+    cp .env.example .env.local
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+    Edit the `.env.local` file and add your API keys:
+
+    ```plaintext
+    UPSTASH_REDIS_REST_URL=your-upstash-redis-url
+    UPSTASH_REDIS_REST_TOKEN=your-upstash-redis-token
+    NEXTAUTH_SECRET=your-nextauth-secret
+    NEXTAUTH_URL=http://localhost:3000
+    GOOGLE_CLIENT_ID=your-google-client-id
+    GOOGLE_CLIENT_SECRET=your-google-client-secret
+    PUSHER_APP_ID=your-pusher-app-id
+    NEXT_PUBLIC_PUSHER_APP_KEY=your-pusher-key
+    PUSHER_APP_SECRET=your-pusher-secret
+    ```
+
+4. Run the development server:
+
+    ```bash
+    npm run dev
+    ```
+
+5. Open [http://localhost:3000](http://localhost:3000) to view the app in your browser.
+
+## Demo
+
+
+
+https://github.com/tejus05/chat-app/assets/118271901/e709deb1-c758-49b3-b9ad-de9fa981ddbd
+
+
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/git/git-scm.com/blob/main/MIT-LICENSE.txt) file for details.
