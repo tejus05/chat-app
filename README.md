@@ -65,7 +65,11 @@ This is a real-time chat application built using Next.js 14 with the App Router,
 
 
 
-https://github.com/tejus05/chat-app/assets/118271901/e709deb1-c758-49b3-b9ad-de9fa981ddbd
+
+
+https://github.com/tejus05/chat-app/assets/118271901/68fdbf93-f0a1-4e35-a504-08475d9c1ff2
+
+
 
 
 
